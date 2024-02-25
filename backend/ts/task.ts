@@ -44,7 +44,7 @@ function kLargestCategories(files: FileData[], k: number): string[] {
                 })
             } else {
                 // if the categories does not exist in the array
-                const newCategory : CategoryCount = {
+                const newCategory: CategoryCount = {
                     name: category,
                     countFile: 1,
                 };
@@ -62,7 +62,7 @@ function kLargestCategories(files: FileData[], k: number): string[] {
         return 0 - (a.countFile > b.countFile ? 1 : -1);
     });
 
-    const categoryNames : string[] = categories.map((category) => {
+    const categoryNames: string[] = categories.map((category) => {
         return category.name;
     })
 
@@ -77,7 +77,7 @@ function kLargestCategories(files: FileData[], k: number): string[] {
  * Task 3
  */
 function largestFileSize(files: FileData[]): number {
-    let maxFileSize : number = 0;
+    let maxFileSize: number = 0;
 
     if (files.length === 0) {
         return maxFileSize;
