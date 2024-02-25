@@ -7,27 +7,103 @@ type FileData = {
     size: number
 };
 
+type CategoryCount = {
+    name: string,
+    countFile: number
+}
+
 /**
  * Task 1
  */
 function leafFiles(files: FileData[]): string[] {
-    return [];
+    const leafFileName: string[] = [];
+    files.forEach((file) => {
+        if(!files.some((inFile) => inFile.parent == file.id)) {
+            leafFileName.push(file.name);
+        }
+    })
+
+    return leafFileName;
 }
 
 /**
  * Task 2
  */
 function kLargestCategories(files: FileData[], k: number): string[] {
-    return [];
+    const categories: CategoryCount[] = [];
+
+    files.forEach((file) => {
+        file.categories.forEach((category) => {
+            if (categories.some((categoryType) =>
+                categoryType.name === category)) {
+                // if the categories already existed in the array
+                categories.forEach((categoryType) => {
+                    if (categoryType.name === category) {
+                        categoryType.countFile++;
+                    }
+                })
+            } else {
+                // if the categories does not exist in the array
+                const newCategory : CategoryCount = {
+                    name: category,
+                    countFile: 1,
+                };
+
+                categories.push(newCategory);
+            }
+        })
+    })
+
+    categories.sort((a,b) => {
+        if (a.countFile === b.countFile) {
+            return a.name.localeCompare(b.name);
+        }
+
+        return 0 - (a.countFile > b.countFile ? 1 : -1);
+    });
+
+    const categoryNames : string[] = categories.map((category) => {
+        return category.name;
+    })
+
+    if (categories.length > k) {
+        return categoryNames.slice(0, k);
+    }
+
+    return categoryNames;;
 }
 
 /**
  * Task 3
  */
 function largestFileSize(files: FileData[]): number {
-    return 0;
+    let maxFileSize : number = 0;
+
+    if (files.length === 0) {
+        return maxFileSize;
+    }
+
+    files.forEach((file) => {
+        let fileSize = largestFileSizeHelper(files, file);
+        if (fileSize > maxFileSize) {
+            maxFileSize = fileSize;
+        }
+    })
+
+    return maxFileSize;
 }
 
+// Perform recursive on accessing all the children (if exist) and return the file size.
+function largestFileSizeHelper(files: FileData[], tarFile: FileData): number {
+    let fileSize = tarFile.size;
+    files.forEach(f => {
+        if (f.parent === tarFile.id) {
+            fileSize += largestFileSizeHelper(files, f);
+        }
+    });
+
+    return fileSize;
+}
 
 function arraysEqual<T>(a: T[], b: T[]): boolean {
     if (a === b) return true;
@@ -55,6 +131,8 @@ const testFiles: FileData[] = [
     { id: 233, name: "Folder3", categories: ["Folder"], parent: -1, size: 4096 },
 ];
 
+const testEmptyFiles: FileData[] = [];
+
 console.assert(arraysEqual(
     leafFiles(testFiles).sort((a, b) => a.localeCompare(b)),
     [
@@ -76,3 +154,4 @@ console.assert(arraysEqual(
 ));
 
 console.assert(largestFileSize(testFiles) == 20992)
+console.assert(largestFileSize(testEmptyFiles) == 0)
